@@ -1,0 +1,78 @@
+---
+title: "Course Project: Weight Lifting Activity Prediction"
+output: html_document
+---
+
+## 1. Executive Summary
+The goal of this analysis was to predict how well a weight lifting activity was performed using data from activity tracking devices. The random forest CART model generated in this analysis can predict if the exercise was performed correctly (Class A) with 98.9% accuracy.
+
+## 2. Introduction/Dataset
+The Weight Lifting Exercises dataset was obtained from Groupware@LES (http://groupware.les.inf.puc-rio.br/har).
+6 male subjects aged 20-28 were asked to perform biceps curls either correctly (Class A), or displaying one of 4 common mistakes: throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E). The dataset contains variables recorded by the activity trackers during the 5 variations of this exercise. 
+
+## 3. Methods
+### Loading libraries and datasets:
+```{r load, message=FALSE}
+library(caret)
+library(rpart)
+library(randomForest)
+library(rattle)
+library(rpart.plot)
+
+training <- read.delim("pml-training.csv", sep = ",", na.strings = c("NA", "#DIV/0!"))
+testing <- read.delim("pml-testing.csv", sep = ",", na.strings = c("NA", "#DIV/0!"))
+```
+### Cleaning the training dataset:
+```{r clean}
+table(is.na(training))
+good <- which(colSums(is.na(training)) == 0) # selecting columns without NA's
+clean.train <- training[good]
+Train <- clean.train[, -c(1:7)]
+```
+The original raw data sets contained a large number of NA's that were confined to certain columns which almost exclusively contained NA's. Variables for which the vast majority of observations were NA were removed from the dataset, because imputing these values would not be a good idea given that there were so few actual values in these columns. The first 7 columns of the dataset were removed as well since they did not contain any predictor variables. The resulting clean data set contains 19622 observations of 53 variables.  
+
+### Split data set into training and validation sets:
+```{r partition}
+set.seed(12345)
+inTrain <- createDataPartition(y=Train$classe, p=0.1, list=FALSE)
+train <- Train[inTrain,]
+val <- Train[-inTrain,]
+dim(train); dim(val)
+```
+In order to keep the processing time for the model fit reasonable, only 10% of the data set were allocated to the training set and 90% were set aside for validation. If I had had more time I would have preferred a 70%:30% split. I tried running a random forest model with 70% of the training data, but the model fit could not be completed in a reasonable amount of time.
+
+### Fit prediction model using the random forest method:
+```{r model fit, cache=TRUE}
+set.seed(12345)
+Fit <- train(classe ~ ., data = train, method = "rf")
+```
+
+## 4. Results
+
+### Final Model:
+```{r final model}
+Fit$finalModel
+```
+The predicted out of sample error of the final model is 5.7%.
+
+### Prediction on validation data:
+```{r predict}
+predictions <- predict(Fit, newdata = val)
+```
+
+### Cross Validation:
+```{r validation}
+confusionMatrix(predictions, val$classe)
+```
+When validating the model on the validation data set, the out of sample error is 5.0%. 
+
+### Predicting Test Data:
+```{r}
+test.pred <- predict(Fit, newdata = testing)
+test.pred
+```
+
+## 5. Discussion
+The overall out of sample error of the prediction model is 5%, but there are some differences in the prediction accuracy between the 5 different exercise classes. Class B has the lowest balanced accuracy (94.5%), while Class A has the highest (98.9%).
+Limitations of this model: If I had had more time and hardware resources, I would have used a larger fraction of the training set (60-70%) to build the predition model which probably would have yielded even more accurate predictions.
+
