@@ -138,11 +138,11 @@ Fit &lt;- train(classe ~ ., data = train, method = &quot;rf&quot;)</code></pre>
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 4957  111    2    3    8
-##          B   14 3097  119    9   81
-##          C   25  184 2945  143   76
-##          D   11   19   13 2723   25
-##          E   15    6    0   16 3056
+##          A 4957  112    2    3    8
+##          B   14 3095  119    9   81
+##          C   25  185 2945  143   76
+##          D   11   19   13 2723   24
+##          E   15    6    0   16 3057
 ## 
 ## Overall Statistics
 ##                                         
@@ -157,14 +157,14 @@ Fit &lt;- train(classe ~ ., data = train, method = &quot;rf&quot;)</code></pre>
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity             0.987    0.906    0.956    0.941    0.941
+## Sensitivity             0.987    0.906    0.956    0.941    0.942
 ## Specificity             0.990    0.984    0.971    0.995    0.997
-## Pos Pred Value          0.976    0.933    0.873    0.976    0.988
+## Pos Pred Value          0.975    0.933    0.873    0.976    0.988
 ## Neg Pred Value          0.995    0.978    0.991    0.988    0.987
 ## Prevalence              0.284    0.194    0.174    0.164    0.184
 ## Detection Rate          0.281    0.175    0.167    0.154    0.173
 ## Detection Prevalence    0.288    0.188    0.191    0.158    0.175
-## Balanced Accuracy       0.989    0.945    0.964    0.968    0.969</code></pre>
+## Balanced Accuracy       0.989    0.945    0.964    0.968    0.970</code></pre>
 <p>When validating the model on the validation data set, the out of sample error is 5.0%.</p>
 </div>
 <div id="predicting-test-data" class="section level3">
@@ -173,6 +173,35 @@ Fit &lt;- train(classe ~ ., data = train, method = &quot;rf&quot;)</code></pre>
 test.pred</code></pre>
 <pre><code>##  [1] B A A A A E D D A A B C B A E E A B B B
 ## Levels: A B C D E</code></pre>
+</div>
+<div id="importance-of-variables-used-in-the-model" class="section level3">
+<h3>Importance of variables used in the model:</h3>
+<pre class="r"><code>varImp(Fit)</code></pre>
+<pre><code>## rf variable importance
+## 
+##   only 20 most important variables shown (out of 52)
+## 
+##                      Overall
+## roll_belt             100.00
+## pitch_forearm          56.55
+## magnet_dumbbell_z      53.40
+## yaw_belt               46.20
+## pitch_belt             33.88
+## magnet_dumbbell_y      31.24
+## roll_forearm           22.90
+## roll_dumbbell          20.34
+## accel_belt_z           19.75
+## magnet_dumbbell_x      18.37
+## accel_dumbbell_y       17.39
+## accel_dumbbell_z       17.05
+## magnet_belt_z          15.96
+## accel_forearm_x        14.59
+## gyros_dumbbell_y       13.67
+## magnet_belt_y          12.47
+## magnet_forearm_z       11.18
+## total_accel_dumbbell   10.42
+## yaw_arm                 8.85
+## magnet_arm_x            8.83</code></pre>
 </div>
 </div>
 <div id="discussion" class="section level2">
